@@ -8,11 +8,13 @@ consumer_secret = ''
 access_token = ''
 access_token_secret = ''
 
+
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
-user = api.me()
+user = api.verify_credentials()
 print (user.name) #prints your name.
 print (user.screen_name)
 print (user.followers_count)
@@ -24,12 +26,12 @@ def limit_handle(cursor):
   while True:
     try:
       yield cursor.next()
-    except tweepy.RateLimitError:
+    except tweepy.TooManyRequests:
       time.sleep(1000)
 
 
 #Be nice to your followers. Follow everyone!
-for follower in limit_handle(tweepy.Cursor(api.followers).items()):
+for follower in limit_handle(tweepy.Cursor(api.get_followers).items()):
   if follower.name == 'Usernamehere':
     print(follower.name)
     follower.follow()
